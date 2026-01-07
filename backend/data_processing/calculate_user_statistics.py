@@ -21,15 +21,15 @@ async def get_user_statistics(
     try:
         user_stats = {
             "user_rating": {
-                "mean": round(user_df["user_rating"].mean(), 3),
-                "std": round(user_df["user_rating"].std(), 3),
+                "mean": round(user_df["user_rating"].mean(), 2),
+                "std": round(user_df["user_rating"].std(), 2),
             },
             "letterboxd_rating": {
-                "mean": round(user_df["letterboxd_rating"].mean(), 3),
-                "std": round(user_df["letterboxd_rating"].std(), 3),
+                "mean": round(user_df["letterboxd_rating"].mean(), 2),
+                "std": round(user_df["letterboxd_rating"].std(), 2),
             },
             "rating_differential": {
-                "mean": round(user_df["rating_differential"].mean(), 3),
+                "mean": round(user_df["rating_differential"].mean(), 2),
             },
             "letterboxd_rating_count": {
                 "mean": int(user_df["letterboxd_rating_count"].mean()),
@@ -53,9 +53,9 @@ def get_average_genre_ratings(user_df: pd.DataFrame) -> Dict[str, Dict[str, floa
     # Calculates average ratings
     for genre in genre_averages:
         temp = user_df.loc[user_df[f"is_{genre}"] == 1]
-        genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 3)
+        genre_averages[genre]["mean_user_rating"] = round(temp["user_rating"].mean(), 2)
         genre_averages[genre]["mean_rating_differential"] = round(
-            temp["rating_differential"].mean(), 3
+            temp["rating_differential"].mean(), 2
         )
 
     # Converts NaN values to string N/A
