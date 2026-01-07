@@ -20,6 +20,7 @@
         "framer-motion": "^12.11.3",
         "html-to-image": "^1.11.13",
         "html2canvas": "^1.4.1",
+        "js-yaml": "^4.1.1",
         "notistack": "^3.0.1",
         "react": "^18.2.0",
         "react-bootstrap": "^2.10.2",
