@@ -199,7 +199,7 @@ const StatsTable = ({ statistics }: StatsTableProps) => {
                             component="th"
                             scope="row"
                         >
-                            {statistics.letterboxd_rating_count.mean}
+                            {statistics.letterboxd_rating_count.mean.toLocaleString()}
                         </TableCell>
                         <TableCell
                             sx={{
