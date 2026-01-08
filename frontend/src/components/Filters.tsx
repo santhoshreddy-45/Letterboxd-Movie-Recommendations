@@ -160,6 +160,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                             });
                             presetHandler(selectedOption.value);
                         }}
+                        isSearchable={false}
                     />
                 </div>
                 <div className="flex justify-around">
@@ -454,6 +455,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                 });
                                 presetHandler(selectedOption.value);
                             }}
+                            isSearchable={false}
                         />
                     </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
