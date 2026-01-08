@@ -7,8 +7,80 @@ import Typography from "@mui/material/Typography";
 
 import DefinitionModal from "./Modals/DefinitionModal";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
+import SelectDropdown from "./Selection/SelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
+
+const filterPresetOptions = [
+    { label: "None", value: "none" },
+    { label: "Animania", value: "animania" },
+    { label: "Classic Cinema", value: "classic_cinema" },
+    { label: "Date Night", value: "date_night" },
+    { label: "Educational", value: "educational" },
+    { label: "Epic Films", value: "epic_films" },
+    { label: "Family Night", value: "family_night" },
+    { label: "Hidden Gems", value: "hidden_gems" },
+    { label: "Horror Night", value: "horror_night" },
+];
+
+const genreOptions = [
+    { label: "Action", value: "action" },
+    { label: "Adventure", value: "adventure" },
+    { label: "Animation", value: "animation" },
+    { label: "Comedy", value: "comedy" },
+    { label: "Crime", value: "crime" },
+    {
+        label: "Documentary",
+        value: "documentary",
+    },
+    { label: "Drama", value: "drama" },
+    { label: "Family", value: "family" },
+    { label: "Fantasy", value: "fantasy" },
+    { label: "History", value: "history" },
+    { label: "Horror", value: "horror" },
+    { label: "Music", value: "music" },
+    { label: "Mystery", value: "mystery" },
+    { label: "Romance", value: "romance" },
+    {
+        label: "Science Fiction",
+        value: "science_fiction",
+    },
+    { label: "TV Movie", value: "tv_movie" },
+    { label: "Thriller", value: "thriller" },
+    { label: "War", value: "war" },
+    { label: "Western", value: "western" },
+];
+
+const contentTypeOptions = [
+    { label: "Movie", value: "movie" },
+    { label: "TV", value: "tv" },
+];
+
+const popularityOptions = [
+    { label: "Low", value: "low" },
+    { label: "Medium", value: "medium" },
+    { label: "High", value: "high" },
+];
+
+const filterDefinitions = {
+    "Filter Preset":
+        "Applies preset filters that are useful for common film-watching scenarios, settings, and moods.",
+    Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
+    "Content Types":
+        "Filters by content type. The options are movie and TV, as defined by TMDB. Movies are recommended by default.",
+    "Release Year":
+        "Filters by release year. Includes movies that were released within the specified range (inclusive).",
+    Runtime:
+        "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
+    Popularity:
+        "Filters by popularity, based on the number of Letterboxd ratings. Low includes movies with less than 25,000 ratings, medium includes movies with 25,000-100,000 ratings, and high includes movies with more than 100,000 ratings. Movies with any popularity are considered by default.",
+    "Highly Rated":
+        "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
+    Watchlist:
+        "Filters by watchlist. If toggled on, movies on the user's watchlist will be included. Note that toggling this option off will increase response time. Watchlist is included by default.",
+    Rewatches:
+        "Filters by rewatches. If toggled on, rewatches can be recommended. This is intended for group settings to allow suggestions that only a subset of the group might have seen. Rewatches are excluded by default.",
+};
 
 interface FiltersProps {
     allowRewatches: boolean;
@@ -23,61 +95,38 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
     }
     const [state, dispatch] = context;
 
-    const genreOptions = [
-        { label: "Action", value: "action" },
-        { label: "Adventure", value: "adventure" },
-        { label: "Animation", value: "animation" },
-        { label: "Comedy", value: "comedy" },
-        { label: "Crime", value: "crime" },
-        {
-            label: "Documentary",
-            value: "documentary",
-        },
-        { label: "Drama", value: "drama" },
-        { label: "Family", value: "family" },
-        { label: "Fantasy", value: "fantasy" },
-        { label: "History", value: "history" },
-        { label: "Horror", value: "horror" },
-        { label: "Music", value: "music" },
-        { label: "Mystery", value: "mystery" },
-        { label: "Romance", value: "romance" },
-        {
-            label: "Science Fiction",
-            value: "science_fiction",
-        },
-        { label: "TV Movie", value: "tv_movie" },
-        { label: "Thriller", value: "thriller" },
-        { label: "War", value: "war" },
-        { label: "Western", value: "western" },
-    ];
-
-    const contentTypeOptions = [
-        { label: "Movie", value: "movie" },
-        { label: "TV", value: "tv" },
-    ];
-
-    const popularityOptions = [
-        { label: "Low", value: "low" },
-        { label: "Medium", value: "medium" },
-        { label: "High", value: "high" },
-    ];
-
-    const filterDefinitions = {
-        Genres: "Filters by genre. Movies can usually be recommended if any of its genres are selected. Animation, documentary, and horror genres will only be recommended if selected. Movies whose only genre is music are excluded by default.",
-        "Content Types":
-            "Filters by content type. The options are movie and TV, as defined by TMDB. Movies are recommended by default.",
-        "Release Year":
-            "Filters by release year. Includes movies that were released within the specified range (inclusive).",
-        Runtime:
-            "Filters by runtime (minutes). Includes movies that have a runtime within the specified range (inclusive).",
-        Popularity:
-            "Filters by popularity, based on the number of Letterboxd ratings. Low includes movies with less than 25,000 ratings, medium includes movies with 25,000-100,000 ratings, and high includes movies with more than 100,000 ratings. Movies with any popularity are considered by default.",
-        "Highly Rated":
-            "Filters by highly rated movies. If toggled on, only movies with a Letterboxd community rating of 3.5 or greater can be recommended. All ratings are included by default.",
-        Watchlist:
-            "Filters by watchlist. If toggled on, movies on the user's watchlist will be included. Note that toggling this option off will increase response time. Watchlist is included by default.",
-        Rewatches:
-            "Filters by rewatches. If toggled on, rewatches can be recommended. This is intended for group settings to allow suggestions that only a subset of the group might have seen. Rewatches are excluded by default.",
+    const presetHandler = (presetValue: string) => {
+        switch (presetValue) {
+            case "animania":
+                dispatch({ type: "setAnimaniaPreset" });
+                break;
+            case "classic_cinema":
+                dispatch({ type: "setClassicCinemaPreset" });
+                break;
+            case "date_night":
+                dispatch({ type: "setDateNightPreset" });
+                break;
+            case "educational":
+                dispatch({ type: "setEducationalPreset" });
+                break;
+            case "epic_films":
+                dispatch({ type: "setEpicFilmsPreset" });
+                break;
+            case "family_night":
+                dispatch({ type: "setFamilyNightPreset" });
+                break;
+            case "hidden_gems":
+                dispatch({ type: "setHiddenGemsPreset" });
+                break;
+            case "horror_night":
+                dispatch({ type: "setHorrorNightPreset" });
+                break;
+            case "none":
+                dispatch({ type: "reset" });
+                break;
+            default:
+                break;
+        }
     };
 
     const resetFilters = () => {
@@ -88,6 +137,31 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
     return (
         <div className="w-fit mx-auto mt-8 flex flex-col">
             <div className="hidden md:w-128 mx-auto md:flex md:flex-col md:space-y-4">
+                <div className="w-48 mx-auto">
+                    <div className="flex justify-center">
+                        <h6 className="w-fit my-auto text-xl">Filter Preset</h6>
+                        <DefinitionModal
+                            title={"Filter Preset"}
+                            definition={filterDefinitions["Filter Preset"]}
+                        />
+                    </div>
+                    <SelectDropdown
+                        options={filterPresetOptions}
+                        value={state.filterPreset}
+                        setValue={(selectedOption) => {
+                            if (!selectedOption) {
+                                return;
+                            }
+                            dispatch({
+                                type: "setFilterPreset",
+                                payload: {
+                                    filterPreset: selectedOption,
+                                },
+                            });
+                            presetHandler(selectedOption.value);
+                        }}
+                    />
+                </div>
                 <div className="flex justify-around">
                     <div className="w-48">
                         <div className="flex justify-center">
@@ -355,6 +429,33 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                     <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
                         <Typography variant="button">Filters</Typography>
                     </AccordionSummary>
+                    <AccordionDetails className="w-4/5 mx-auto">
+                        <div className="flex justify-center">
+                            <h6 className="w-fit my-auto text-xl">
+                                Filter Preset
+                            </h6>
+                            <DefinitionModal
+                                title={"Filter Preset"}
+                                definition={filterDefinitions["Filter Preset"]}
+                            />
+                        </div>
+                        <SelectDropdown
+                            options={filterPresetOptions}
+                            value={state.filterPreset}
+                            setValue={(selectedOption) => {
+                                if (!selectedOption) {
+                                    return;
+                                }
+                                dispatch({
+                                    type: "setFilterPreset",
+                                    payload: {
+                                        filterPreset: selectedOption,
+                                    },
+                                });
+                                presetHandler(selectedOption.value);
+                            }}
+                        />
+                    </AccordionDetails>
                     <AccordionDetails className="w-4/5 mx-auto">
                         <div className="flex justify-center">
                             <h6 className="w-fit my-auto text-lg">Genres</h6>

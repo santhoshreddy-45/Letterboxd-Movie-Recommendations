@@ -5,6 +5,12 @@ export type ContentType = {
     disabled?: boolean;
 };
 
+export type FilterPresetType = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
 export type FilterState = {
     genres: GenreType[];
     contentTypes: ContentType[];
@@ -17,6 +23,7 @@ export type FilterState = {
     includeWatchlist: boolean;
     allowRewatches: boolean;
     modelType: ModelType;
+    filterPreset: FilterPresetType;
     description: string;
     predictionList: string[];
 };
