@@ -2,6 +2,7 @@ import { createContext, Dispatch, useReducer } from "react";
 
 import {
     ContentType,
+    FilterPresetType,
     FilterState,
     GenreType,
     ModelType,
@@ -14,7 +15,7 @@ export const MovieFilterContext = createContext<MovieFilterContext | undefined>(
     undefined
 );
 
-const initialState = {
+const initialState: FilterState = {
     genres: [
         { label: "Action", value: "action" },
         { label: "Adventure", value: "adventure" },
@@ -43,14 +44,14 @@ const initialState = {
     minRuntime: "0",
     maxRuntime: "1200",
     popularity: [
-        { label: "Low", value: "low" },
-        { label: "Medium", value: "medium" },
         { label: "High", value: "high" },
+        { label: "Medium", value: "medium" },
     ],
     highlyRated: false,
     includeWatchlist: true,
     allowRewatches: false,
     modelType: { label: "Personalized", value: "personalized" },
+    filterPreset: { label: "None", value: "none" },
     description: "",
     predictionList: [""],
 };
@@ -67,6 +68,15 @@ type Action =
     | { type: "setIncludeWatchlist"; payload: { includeWatchlist: boolean } }
     | { type: "setAllowRewatches"; payload: { allowRewatches: boolean } }
     | { type: "setModelType"; payload: { modelType: ModelType } }
+    | { type: "setFilterPreset"; payload: { filterPreset: FilterPresetType } }
+    | { type: "setAnimaniaPreset" }
+    | { type: "setClassicCinemaPreset" }
+    | { type: "setDateNightPreset" }
+    | { type: "setEducationalPreset" }
+    | { type: "setEpicFilmsPreset" }
+    | { type: "setFamilyNightPreset" }
+    | { type: "setHiddenGemsPreset" }
+    | { type: "setHorrorNightPreset" }
     | { type: "setDescription"; payload: { description: string } }
     | { type: "setPredictionList"; payload: { predictionList: string[] } }
     | {
@@ -129,6 +139,102 @@ function movieFilterReducer(state: FilterState, action: Action) {
             return {
                 ...state,
                 modelType: action.payload.modelType,
+            };
+        case "setFilterPreset":
+            return {
+                ...state,
+                filterPreset: action.payload.filterPreset,
+            };
+        case "setAnimaniaPreset":
+            return {
+                ...initialState,
+                genres: [{ label: "Animation", value: "animation" }],
+                contentTypes: [
+                    { label: "Movie", value: "movie" },
+                    { label: "TV", value: "tv" },
+                ],
+                highlyRated: true,
+                filterPreset: { label: "Animania", value: "animania" },
+            };
+        case "setClassicCinemaPreset":
+            return {
+                ...initialState,
+                genres: [
+                    { label: "Crime", value: "crime" },
+                    { label: "Drama", value: "drama" },
+                    { label: "Romance", value: "romance" },
+                    { label: "Western", value: "western" },
+                ],
+                maxReleaseYear: "1980",
+                highlyRated: true,
+                filterPreset: {
+                    label: "Classic Cinema",
+                    value: "classic_cinema",
+                },
+            };
+        case "setDateNightPreset":
+            return {
+                ...initialState,
+                genres: [
+                    { label: "Comedy", value: "comedy" },
+                    { label: "Romance", value: "romance" },
+                ],
+                minReleaseYear: "1990",
+                filterPreset: { label: "Date Night", value: "date_night" },
+            };
+        case "setEducationalPreset":
+            return {
+                ...initialState,
+                genres: [
+                    { label: "Documentary", value: "documentary" },
+                    { label: "History", value: "history" },
+                ],
+                contentTypes: [
+                    { label: "Movie", value: "movie" },
+                    { label: "TV", value: "tv" },
+                ],
+                minReleaseYear: "1960",
+                highlyRated: true,
+                filterPreset: { label: "Educational", value: "educational" },
+            };
+        case "setEpicFilmsPreset":
+            return {
+                ...initialState,
+                genres: [
+                    { label: "Adventure", value: "adventure" },
+                    { label: "Drama", value: "drama" },
+                    { label: "Fantasy", value: "fantasy" },
+                    { label: "History", value: "history" },
+                    { label: "Science Fiction", value: "science_fiction" },
+                    { label: "War", value: "war" },
+                ],
+                minRuntime: "150",
+                highlyRated: true,
+                filterPreset: { label: "Epic Films", value: "epic_films" },
+            };
+        case "setFamilyNightPreset":
+            return {
+                ...initialState,
+                genres: [{ label: "Family", value: "family" }],
+                minReleaseYear: "1980",
+                filterPreset: { label: "Family Night", value: "family_night" },
+            };
+        case "setHiddenGemsPreset":
+            return {
+                ...initialState,
+                popularity: [
+                    { label: "Medium", value: "medium" },
+                    { label: "Low", value: "low" },
+                ],
+                highlyRated: true,
+                filterPreset: { label: "Hidden Gems", value: "hidden_gems" },
+            };
+        case "setHorrorNightPreset":
+            return {
+                ...initialState,
+                genres: [{ label: "Horror", value: "horror" }],
+                minReleaseYear: "1980",
+                filterPreset: { label: "Horror Night", value: "horror_night" },
             };
         case "setDescription":
             return {
