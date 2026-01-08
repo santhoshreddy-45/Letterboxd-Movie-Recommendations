@@ -57,9 +57,9 @@ const contentTypeOptions = [
 ];
 
 const popularityOptions = [
-    { label: "Low", value: "low" },
-    { label: "Medium", value: "medium" },
     { label: "High", value: "high" },
+    { label: "Medium", value: "medium" },
+    { label: "Low", value: "low" },
 ];
 
 const filterDefinitions = {
