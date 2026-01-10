@@ -19,6 +19,8 @@ import SquareAd from "../components/Ads/SquareAd";
 
 import useIsScreenLg from "../hooks/useIsScreenLg";
 
+import { validateSingleUsername } from "../Utils";
+
 import {
     StatisticsFormValues,
     StatisticsResponse,
@@ -96,42 +98,36 @@ const Statistics = () => {
     const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
 
     const getStatistics = async (username: string) => {
-        username = username
-            .trim()
-            .replace("https://letterboxd.com/", "")
-            .replace("/", "");
-        if (username !== currentUser) {
-            setStatistics(null);
-            try {
-                setGettingStatistics(true);
-                const statisticsResponse = await axios.post(
-                    `${backend}/api/get-statistics`,
-                    { username: username }
-                );
-                // console.log(statisticsResponse.data.data);
-                setStatistics(statisticsResponse.data.data);
-                setGeneratedDatetime(new Date().toLocaleString());
-                setCurrentUser(username);
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
+        if (username === currentUser) {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingStatistics(true);
+        setStatistics(null);
+        try {
+            const statisticsResponse = await axios.post(
+                `${backend}/api/get-statistics`,
+                { username: username }
+            );
+            // console.log(statisticsResponse.data.data);
+            setStatistics(statisticsResponse.data.data);
+            setGeneratedDatetime(new Date().toLocaleString());
+            setCurrentUser(username);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingStatistics(false);
     };
@@ -145,8 +141,15 @@ const Statistics = () => {
     const { errors, isDirty, isValid } = formState;
 
     const onSubmit = (data: StatisticsFormValues) => {
-        const username = data.username.toLowerCase();
-        getStatistics(username);
+        const usernameValidation = validateSingleUsername(data.username);
+        if (usernameValidation.status === "error") {
+            enqueueSnackbar(usernameValidation.message, {
+                variant: "error",
+            });
+            return;
+        }
+
+        getStatistics(usernameValidation.username);
     };
 
     const onError = (errors: FieldErrors<StatisticsFormValues>) => {

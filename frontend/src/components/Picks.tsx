@@ -16,6 +16,8 @@ import RecDisplay from "./Displays/RecDisplay";
 
 import useIsScreenXl from "../hooks/useIsScreenXl";
 
+import { validateMultipleUsernames } from "../Utils";
+
 import {
     PickFormValues,
     PickState,
@@ -31,20 +33,29 @@ const isQueryEqual = (
     previousQuery: PickQuery,
     currentQuery: PickQuery
 ): boolean => {
-    if (currentQuery.pickType === "random") return false;
-    if (
-        previousQuery.usernames.slice().sort().toString() !==
-        currentQuery.usernames.slice().sort().toString()
-    )
+    if (currentQuery.pickType === "random") {
         return false;
-    if (previousQuery.overlap != currentQuery.overlap) return false;
-    if (previousQuery.pickType != currentQuery.pickType) return false;
+    }
+    if (previousQuery.usernames.length !== currentQuery.usernames.length) {
+        return false;
+    }
+    for (let i = 0; i < previousQuery.usernames.length; i++) {
+        if (previousQuery.usernames[i] !== currentQuery.usernames[i]) {
+            return false;
+        }
+    }
+    if (previousQuery.overlap != currentQuery.overlap) {
+        return false;
+    }
+    if (previousQuery.pickType != currentQuery.pickType) {
+        return false;
+    }
 
     return true;
 };
 
 interface getPicksProps {
-    userList: string[];
+    usernames: string[];
     overlap: "y" | "n";
     pickType: PickType;
 }
@@ -87,87 +98,67 @@ const Picks = () => {
 
     const getPicks = async (data: getPicksProps) => {
         const currentQuery = {
-            usernames: data.userList.map((username) =>
-                username.replace("https://letterboxd.com/", "").replace("/", "")
-            ),
+            usernames: data.usernames,
             overlap: data.overlap,
             pickType: data.pickType,
         };
 
-        if (!isQueryEqual(previousQuery, currentQuery)) {
-            setGettingPicks(true);
-            setPickState((prev) => ({
-                ...prev,
-                data: null,
-            }));
-
-            try {
-                // console.log(currentQuery);
-                const response = await axios.post(
-                    `${backend}/api/get-watchlist-picks`,
-                    { currentQuery }
-                );
-                // console.log(response.data.data);
-                setPickState((prev) => ({
-                    ...prev,
-                    data: response.data.data,
-                }));
-                setPreviousQuery(currentQuery);
-                setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
+        if (isQueryEqual(previousQuery, currentQuery)) {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingPicks(true);
+        setPickState((prev) => ({
+            ...prev,
+            data: null,
+        }));
+        try {
+            // console.log(currentQuery);
+            const response = await axios.post(
+                `${backend}/api/get-watchlist-picks`,
+                { currentQuery }
+            );
+            // console.log(response.data.data);
+            setPickState((prev) => ({
+                ...prev,
+                data: response.data.data,
+            }));
+            setPreviousQuery(currentQuery);
+            setGeneratedDatetime(new Date().toLocaleString());
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingPicks(false);
     };
 
     const onSubmit = (formData: PickFormValues) => {
-        const usernames = formData.userList
-            .split(",")
-            .map((user) => user.trim().toLowerCase())
-            .filter((user) => user !== "");
-
-        if (usernames.length === 0) {
-            console.log("must enter valid username(s)");
-            enqueueSnackbar("must enter valid username(s)", {
+        const usernameValidation = validateMultipleUsernames(formData.userList);
+        if (usernameValidation.status === "error") {
+            enqueueSnackbar(usernameValidation.message, {
                 variant: "error",
             });
             return;
         }
+
         const data: getPicksProps = {
             ...formData,
-            userList: formData.userList
-                .split(",")
-                .map((user) => user.trim().toLowerCase())
-                .filter((user) => user !== ""),
+            usernames: usernameValidation.usernames,
             overlap: overlap === true ? "y" : "n",
             pickType: pickState.type,
         };
-
-        if (data.userList.length === 0) {
-            console.log("must enter valid username(s)");
-            enqueueSnackbar("must enter valid username(s)", {
-                variant: "error",
-            });
-            return;
-        }
 
         getPicks(data);
     };
