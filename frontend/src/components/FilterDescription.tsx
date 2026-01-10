@@ -42,7 +42,7 @@ const FilterDescription = () => {
                     dispatch({
                         type: "setDescription",
                         payload: {
-                            description: e.target.value.trim(),
+                            description: e.target.value,
                         },
                     })
                 }
