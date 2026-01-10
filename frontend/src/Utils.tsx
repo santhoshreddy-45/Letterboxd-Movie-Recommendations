@@ -46,8 +46,6 @@ export function validateMultipleUsernames(
 export function validateSingleUsername(
     userInput: string
 ): SingleUsernameValidation {
-    const USERNAME_REGEX = /^[a-z0-9_]{2,15}$/;
-
     const username = userInput.trim().toLowerCase();
 
     // Validates non-empty input
@@ -67,6 +65,7 @@ export function validateSingleUsername(
     }
 
     // Validates against Letterboxd regex (https://api-docs.letterboxd.com/#operation-GET-auth_username-check)
+    const USERNAME_REGEX = /^[a-z0-9_]{2,15}$/;
     if (!USERNAME_REGEX.test(username)) {
         if (username.length < 2 || username.length > 15) {
             return {
