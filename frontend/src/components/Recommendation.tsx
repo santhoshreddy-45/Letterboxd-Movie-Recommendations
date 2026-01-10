@@ -18,6 +18,8 @@ import RecDisplay from "./Displays/RecDisplay";
 
 import useIsScreenXl from "../hooks/useIsScreenXl";
 
+import { validateMultipleUsernames, validateSingleUsername } from "../Utils";
+
 import {
     FilterType,
     RecommendationFormValues,
@@ -36,30 +38,64 @@ const isQueryEqual = (
     previousQuery: RecommendationQuery,
     currentQuery: RecommendationQuery
 ): boolean => {
-    if (
-        previousQuery.usernames.slice().sort().toString() !==
-        currentQuery.usernames.slice().sort().toString()
-    )
+    if (previousQuery.usernames.length !== currentQuery.usernames.length) {
         return false;
-    if (previousQuery.genres !== currentQuery.genres) return false;
-    if (previousQuery.content_types !== currentQuery.content_types)
-        return false;
-    if (previousQuery.min_release_year !== currentQuery.min_release_year)
-        return false;
-    if (previousQuery.max_release_year !== currentQuery.max_release_year)
-        return false;
-    for (let i = 0; i < previousQuery.genres.length; i++) {
-        if (previousQuery.genres[i] !== currentQuery.genres[i]) return false;
     }
-    if (previousQuery.min_runtime !== currentQuery.min_runtime) return false;
-    if (previousQuery.max_runtime !== currentQuery.max_runtime) return false;
-    if (previousQuery.popularity !== currentQuery.popularity) return false;
-    if (previousQuery.highly_rated !== currentQuery.highly_rated) return false;
-    if (previousQuery.include_watchlist !== currentQuery.include_watchlist)
+    for (let i = 0; i < previousQuery.usernames.length; i++) {
+        if (previousQuery.usernames[i] !== currentQuery.usernames[i]) {
+            return false;
+        }
+    }
+    if (previousQuery.genres.length !== currentQuery.genres.length) {
         return false;
-    if (previousQuery.allow_rewatches !== currentQuery.allow_rewatches)
+    }
+    for (let i = 0; i < previousQuery.genres.length; i++) {
+        if (previousQuery.genres[i] !== currentQuery.genres[i]) {
+            return false;
+        }
+    }
+    if (
+        previousQuery.content_types.length !== currentQuery.content_types.length
+    ) {
         return false;
-    if (previousQuery.model_type !== currentQuery.model_type) return false;
+    }
+    for (let i = 0; i < previousQuery.content_types.length; i++) {
+        if (previousQuery.content_types[i] !== currentQuery.content_types[i]) {
+            return false;
+        }
+    }
+    if (previousQuery.min_release_year !== currentQuery.min_release_year) {
+        return false;
+    }
+    if (previousQuery.max_release_year !== currentQuery.max_release_year) {
+        return false;
+    }
+    if (previousQuery.min_runtime !== currentQuery.min_runtime) {
+        return false;
+    }
+    if (previousQuery.max_runtime !== currentQuery.max_runtime) {
+        return false;
+    }
+    if (previousQuery.popularity.length !== currentQuery.popularity.length) {
+        return false;
+    }
+    for (let i = 0; i < previousQuery.popularity.length; i++) {
+        if (previousQuery.popularity[i] !== currentQuery.popularity[i]) {
+            return false;
+        }
+    }
+    if (previousQuery.highly_rated !== currentQuery.highly_rated) {
+        return false;
+    }
+    if (previousQuery.include_watchlist !== currentQuery.include_watchlist) {
+        return false;
+    }
+    if (previousQuery.allow_rewatches !== currentQuery.allow_rewatches) {
+        return false;
+    }
+    if (previousQuery.model_type !== currentQuery.model_type) {
+        return false;
+    }
 
     return true;
 };
@@ -68,10 +104,12 @@ const isFilterQueryEqual = (
     previousFilterQuery: RecommendationFilterQuery,
     currentFilterQuery: RecommendationFilterQuery
 ): boolean => {
-    if (previousFilterQuery.username !== currentFilterQuery.username)
+    if (previousFilterQuery.username !== currentFilterQuery.username) {
         return false;
-    if (previousFilterQuery.description !== currentFilterQuery.description)
+    }
+    if (previousFilterQuery.description !== currentFilterQuery.description) {
         return false;
+    }
 
     return true;
 };
@@ -80,14 +118,23 @@ const isPredictionQueryEqual = (
     previousPredictionQuery: RecommendationPredictionQuery,
     currentPredictionQuery: RecommendationPredictionQuery
 ): boolean => {
-    if (previousPredictionQuery.username !== currentPredictionQuery.username)
+    if (previousPredictionQuery.username !== currentPredictionQuery.username) {
         return false;
+    }
     if (
-        previousPredictionQuery.prediction_list !==
-        currentPredictionQuery.prediction_list
-    )
+        previousPredictionQuery.prediction_list.length !==
+        currentPredictionQuery.prediction_list.length
+    ) {
         return false;
-
+    }
+    for (let i = 0; i < previousPredictionQuery.prediction_list.length; i++) {
+        if (
+            previousPredictionQuery.prediction_list[i] !==
+            currentPredictionQuery.prediction_list[i]
+        ) {
+            return false;
+        }
+    }
     return true;
 };
 
@@ -152,14 +199,12 @@ const Recommendation = () => {
     const getRecommendations = async (usernames: string[]) => {
         // validates genres filter
         if (movieFilterState.genres.length === 0) {
-            // console.log("Genre must be selected");
             enqueueSnackbar("Genre must be selected", { variant: "error" });
             return;
         }
 
         // validates content types filter
         if (movieFilterState.contentTypes.length === 0) {
-            // console.log("Content type must be selected");
             enqueueSnackbar("Content type must be selected", {
                 variant: "error",
             });
@@ -186,9 +231,6 @@ const Recommendation = () => {
             Number(movieFilterState.minReleaseYear) < 1880 ||
             Number(movieFilterState.maxReleaseYear) < 1880
         ) {
-            // console.log(
-            //     `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`
-            // );
             enqueueSnackbar(
                 `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
                 { variant: "error" }
@@ -197,9 +239,6 @@ const Recommendation = () => {
         } else if (
             movieFilterState.minReleaseYear > movieFilterState.maxReleaseYear
         ) {
-            // console.log(
-            //     "Min release year cannot be after the max release year"
-            // );
             enqueueSnackbar(
                 "Min release year cannot be after the max release year",
                 { variant: "error" }
@@ -214,7 +253,6 @@ const Recommendation = () => {
             isNaN(Number(movieFilterState.maxRuntime)) ||
             movieFilterState.maxRuntime.trim() === ""
         ) {
-            // console.log("Min and max runtime must be numbers");
             enqueueSnackbar("Min and max runtime must be numbers", {
                 variant: "error",
             });
@@ -223,7 +261,6 @@ const Recommendation = () => {
             Number(movieFilterState.minRuntime) > 2000 ||
             Number(movieFilterState.minRuntime) < 0
         ) {
-            // console.log(`Min runtime must be between 0 and 2000 (inclusive)`);
             enqueueSnackbar(
                 `Min runtime must be between 0 and 2000 (inclusive)`,
                 { variant: "error" }
@@ -233,7 +270,6 @@ const Recommendation = () => {
             Number(movieFilterState.maxRuntime) > 2000 ||
             Number(movieFilterState.maxRuntime) < 5
         ) {
-            // console.log(`Max runtime must be between 5 and 2000 (inclusive)`);
             enqueueSnackbar(
                 `Max runtime must be between 5 and 2000 (inclusive)`,
                 { variant: "error" }
@@ -243,7 +279,6 @@ const Recommendation = () => {
             Number(movieFilterState.minRuntime) >
             Number(movieFilterState.maxRuntime)
         ) {
-            // console.log("Min runtime cannot be greater than the max runtime");
             enqueueSnackbar(
                 "Min runtime cannot be greater than the max runtime",
                 {
@@ -255,7 +290,6 @@ const Recommendation = () => {
 
         // validates popularity filter
         if (movieFilterState.popularity.length === 0) {
-            // console.log("Genre must be selected");
             enqueueSnackbar("Popularity must be selected", {
                 variant: "error",
             });
@@ -263,66 +297,61 @@ const Recommendation = () => {
         }
 
         const currentQuery = {
-            usernames: usernames.map((username) =>
-                username.replace("https://letterboxd.com/", "").replace("/", "")
-            ),
+            usernames: usernames,
             genres: movieFilterState.genres.map((genre) => genre.value).sort(),
-            content_types: movieFilterState.contentTypes.map(
-                (contentType) => contentType.value
-            ),
+            content_types: movieFilterState.contentTypes
+                .map((contentType) => contentType.value)
+                .sort(),
             min_release_year: Number(movieFilterState.minReleaseYear),
             max_release_year: Number(movieFilterState.maxReleaseYear),
             min_runtime: Number(movieFilterState.minRuntime),
             max_runtime: Number(movieFilterState.maxRuntime),
-            popularity: movieFilterState.popularity.map(
-                (popularity) => popularity.value
-            ),
+            popularity: movieFilterState.popularity
+                .map((popularity) => popularity.value)
+                .sort(),
             highly_rated: movieFilterState.highlyRated,
             include_watchlist: movieFilterState.includeWatchlist,
             allow_rewatches: movieFilterState.allowRewatches,
             model_type: movieFilterState.modelType.value,
         };
-        if (!isQueryEqual(previousQuery, currentQuery)) {
-            setGettingRecs(true);
-            setRecommendations(null);
-            try {
-                // console.log(currentQuery);
-                const response = await axios.post(
-                    `${backend}/api/get-recommendations`,
-                    { currentQuery }
-                );
-                // console.log(response.data.data);
-                setRecommendations(response.data.data);
-                setPreviousQuery(currentQuery);
-                setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
+        if (isQueryEqual(previousQuery, currentQuery)) {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingRecs(true);
+        setRecommendations(null);
+        try {
+            // console.log(currentQuery);
+            const response = await axios.post(
+                `${backend}/api/get-recommendations`,
+                { currentQuery }
+            );
+            // console.log(response.data.data);
+            setRecommendations(response.data.data);
+            setPreviousQuery(currentQuery);
+            setGeneratedDatetime(new Date().toLocaleString());
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingRecs(false);
     };
 
     const getFilterRecommendations = async (username: string) => {
         // validates description
-        if (movieFilterState.description === "") {
-            // console.log("Description cannot be empty");
+        if (movieFilterState.description.trim() === "") {
             enqueueSnackbar("Description cannot be empty", {
                 variant: "error",
             });
@@ -330,57 +359,52 @@ const Recommendation = () => {
         }
 
         const currentFilterQuery = {
-            username: username
-                .replace("https://letterboxd.com/", "")
-                .replace("/", ""),
-            description: movieFilterState.description,
+            username: username,
+            description: movieFilterState.description.trim(),
         };
-        if (!isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
-            setGettingRecs(true);
-            setFilterRecommendations(null);
-            try {
-                // console.log(currentFilterQuery);
-                const response = await axios.post(
-                    `${backend}/api/get-natural-language-recommendations`,
-                    { currentFilterQuery }
-                );
-                // console.log(response.data.data);
-                setFilterRecommendations(response.data.data);
-                setPreviousFilterQuery(currentFilterQuery);
-                setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
+        if (isFilterQueryEqual(previousFilterQuery, currentFilterQuery)) {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingRecs(true);
+        setFilterRecommendations(null);
+        try {
+            // console.log(currentFilterQuery);
+            const response = await axios.post(
+                `${backend}/api/get-natural-language-recommendations`,
+                { currentFilterQuery }
+            );
+            // console.log(response.data.data);
+            setFilterRecommendations(response.data.data);
+            setPreviousFilterQuery(currentFilterQuery);
+            setGeneratedDatetime(new Date().toLocaleString());
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingRecs(false);
     };
 
     const getPredictionRecommendations = async (username: string) => {
-        // validates predict_list
+        // validates prediction list
         if (
             movieFilterState.predictionList.length === 0 ||
             movieFilterState.predictionList.filter((item) => item.trim() !== "")
                 .length === 0
         ) {
-            // console.log("Prediction URLs cannot be empty");
-            enqueueSnackbar("Predictions URLs cannot be empty", {
+            enqueueSnackbar("At least one prediction URL is required", {
                 variant: "error",
             });
             return;
@@ -390,48 +414,46 @@ const Recommendation = () => {
             username: username
                 .replace("https://letterboxd.com/", "")
                 .replace("/", ""),
-            prediction_list: movieFilterState.predictionList.filter(
-                (item) => item.trim() !== ""
-            ),
+            prediction_list: movieFilterState.predictionList
+                .filter((item) => item.trim() !== "")
+                .sort(),
         };
         if (
-            !isPredictionQueryEqual(
+            isPredictionQueryEqual(
                 previousPredictionQuery,
                 currentPredictionQuery
             )
         ) {
-            setGettingRecs(true);
-            setPredictionRecommendations(null);
-            try {
-                // console.log(currentPredictionQuery);
-                const response = await axios.post(
-                    `${backend}/api/get-prediction-recommendations`,
-                    { currentPredictionQuery }
-                );
-                // console.log(response.data.data);
-                setPredictionRecommendations(response.data.data);
-                setPreviousPredictionQuery(currentPredictionQuery);
-                setGeneratedDatetime(new Date().toLocaleString());
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingRecs(true);
+        setPredictionRecommendations(null);
+        try {
+            // console.log(currentPredictionQuery);
+            const response = await axios.post(
+                `${backend}/api/get-prediction-recommendations`,
+                { currentPredictionQuery }
+            );
+            // console.log(response.data.data);
+            setPredictionRecommendations(response.data.data);
+            setPreviousPredictionQuery(currentPredictionQuery);
+            setGeneratedDatetime(new Date().toLocaleString());
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingRecs(false);
     };
@@ -446,58 +468,41 @@ const Recommendation = () => {
 
     const onSubmit = (formData: RecommendationFormValues) => {
         if (filterType === "manual") {
-            const usernames = formData.userList
-                .split(",")
-                .map((user) => user.trim().toLowerCase())
-                .filter((user) => user !== "");
-
-            if (usernames.length === 0) {
-                // console.log("Must enter valid username(s)");
-                enqueueSnackbar("Must enter valid username(s)", {
+            const usernameValidation = validateMultipleUsernames(
+                formData.userList
+            );
+            if (usernameValidation.status === "error") {
+                enqueueSnackbar(usernameValidation.message, {
                     variant: "error",
                 });
                 return;
             }
 
-            getRecommendations(usernames);
+            getRecommendations(usernameValidation.usernames);
         } else if (filterType === "description") {
-            const username = formData.userList.trim().toLowerCase();
-
-            if (username === "") {
-                // console.log("Must enter valid username(s)");
-                enqueueSnackbar("Must enter valid username", {
+            const usernameValidation = validateSingleUsername(
+                formData.userList
+            );
+            if (usernameValidation.status === "error") {
+                enqueueSnackbar(usernameValidation.message, {
                     variant: "error",
                 });
                 return;
             }
 
-            if (username.includes(",")) {
-                enqueueSnackbar("Only one username is allowed", {
-                    variant: "error",
-                });
-                return;
-            }
-
-            getFilterRecommendations(username);
+            getFilterRecommendations(usernameValidation.username);
         } else if (filterType === "prediction") {
-            const username = formData.userList.trim().toLowerCase();
-
-            if (username === "") {
-                // console.log("Must enter valid username(s)");
-                enqueueSnackbar("Must enter valid username", {
+            const usernameValidation = validateSingleUsername(
+                formData.userList
+            );
+            if (usernameValidation.status === "error") {
+                enqueueSnackbar(usernameValidation.message, {
                     variant: "error",
                 });
                 return;
             }
 
-            if (username.includes(",")) {
-                enqueueSnackbar("Only one username is allowed", {
-                    variant: "error",
-                });
-                return;
-            }
-
-            getPredictionRecommendations(username);
+            getPredictionRecommendations(usernameValidation.username);
         }
     };
 

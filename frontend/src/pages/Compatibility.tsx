@@ -11,6 +11,8 @@ import SquareAd from "../components/Ads/SquareAd";
 
 import useIsScreenLg from "../hooks/useIsScreenLg";
 
+import { validateSingleUsername } from "../Utils";
+
 import {
     CompatibilityFormValues,
     CompatibilityResponse,
@@ -26,10 +28,15 @@ const isQueryEqual = (
     if (
         previousQuery.username_1 === currentQuery.username_2 &&
         previousQuery.username_2 === currentQuery.username_1
-    )
+    ) {
         return true;
-    if (previousQuery.username_1 !== currentQuery.username_1) return false;
-    if (previousQuery.username_2 !== currentQuery.username_2) return false;
+    }
+    if (previousQuery.username_1 !== currentQuery.username_1) {
+        return false;
+    }
+    if (previousQuery.username_2 !== currentQuery.username_2) {
+        return false;
+    }
 
     return true;
 };
@@ -47,45 +54,39 @@ const Compatibility = () => {
 
     const getCompatibility = async (username1: string, username2: string) => {
         const currentQuery = {
-            username_1: username1
-                .replace("https://letterboxd.com/", "")
-                .replace("/", ""),
-            username_2: username2
-                .replace("https://letterboxd.com/", "")
-                .replace("/", ""),
+            username_1: username1,
+            username_2: username2,
         };
-        if (!isQueryEqual(previousQuery, currentQuery)) {
-            setGettingCompatibility(true);
-            setCompatibility(null);
-            try {
-                // console.log(currentQuery);
-                const response = await axios.post(
-                    `${backend}/api/get-compatibility`,
-                    { currentQuery }
-                );
-                // console.log(response.data.data);
-                setCompatibility(response.data.data);
-                setPreviousQuery(currentQuery);
-            } catch (error: unknown) {
-                if (
-                    axios.isAxiosError(error) &&
-                    error.response?.data?.message
-                ) {
-                    console.error(error.response.data.message);
-                    enqueueSnackbar(error.response.data.message, {
-                        variant: "error",
-                    });
-                } else {
-                    console.error(error);
-                    enqueueSnackbar("Internal server error", {
-                        variant: "error",
-                    });
-                }
-            }
-        } else {
+        if (isQueryEqual(previousQuery, currentQuery)) {
             enqueueSnackbar("Identical user query", {
                 variant: "info",
             });
+            return;
+        }
+
+        setGettingCompatibility(true);
+        setCompatibility(null);
+        try {
+            // console.log(currentQuery);
+            const response = await axios.post(
+                `${backend}/api/get-compatibility`,
+                { currentQuery }
+            );
+            // console.log(response.data.data);
+            setCompatibility(response.data.data);
+            setPreviousQuery(currentQuery);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                console.error(error.response.data.message);
+                enqueueSnackbar(error.response.data.message, {
+                    variant: "error",
+                });
+            } else {
+                console.error(error);
+                enqueueSnackbar("Internal server error", {
+                    variant: "error",
+                });
+            }
         }
         setGettingCompatibility(false);
     };
@@ -101,42 +102,33 @@ const Compatibility = () => {
     const watchUsername2 = watch("username2");
 
     const onSubmit = (formData: CompatibilityFormValues) => {
-        const username1 = formData.username1.trim().toLowerCase();
-        if (username1 === "") {
-            enqueueSnackbar("Must enter valid username(s)", {
-                variant: "error",
-            });
-            return;
-        }
-        if (username1.includes(",")) {
-            enqueueSnackbar("Only one username is allowed per field", {
+        const usernameValidation1 = validateSingleUsername(formData.username1);
+        if (usernameValidation1.status === "error") {
+            enqueueSnackbar(usernameValidation1.message, {
                 variant: "error",
             });
             return;
         }
 
-        const username2 = formData.username2.trim().toLowerCase();
-        if (username2 === "") {
-            enqueueSnackbar("Must enter valid username(s)", {
-                variant: "error",
-            });
-            return;
-        }
-        if (username2.includes(",")) {
-            enqueueSnackbar("Only one username is allowed per field", {
+        const usernameValidation2 = validateSingleUsername(formData.username2);
+        if (usernameValidation2.status === "error") {
+            enqueueSnackbar(usernameValidation2.message, {
                 variant: "error",
             });
             return;
         }
 
-        if (username1 === username2) {
+        if (usernameValidation1.username === usernameValidation2.username) {
             enqueueSnackbar("Usernames must be different", {
                 variant: "error",
             });
             return;
         }
 
-        getCompatibility(username1, username2);
+        getCompatibility(
+            usernameValidation1.username,
+            usernameValidation2.username
+        );
     };
 
     const onError = (errors: FieldErrors<CompatibilityFormValues>) => {
