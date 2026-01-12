@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import useIsScreenLg from "../../hooks/useIsScreenLg";
 import useIsScrolled from "../../hooks/useIsScrolled";
+import useScrollLock from "../../hooks/useScrollLock";
 
 const navItems = [
     { text: "Recommendations", url: "/" },
@@ -26,26 +27,7 @@ const Header = () => {
         }
     }, [isScreenLg]);
 
-    useEffect(() => {
-        const body = document.body;
-
-        if (navDrawerOpen) {
-            const scrollBarCompensation =
-                window.innerWidth - document.documentElement.clientWidth;
-            body.style.overflow = "hidden";
-            if (scrollBarCompensation > 0) {
-                body.style.paddingRight = `${scrollBarCompensation}px`;
-            }
-        } else {
-            body.style.overflow = "";
-            body.style.paddingRight = "";
-        }
-
-        return () => {
-            body.style.overflow = "";
-            body.style.paddingRight = "";
-        };
-    }, [navDrawerOpen]);
+    useScrollLock(navDrawerOpen);
 
     return (
         <div
