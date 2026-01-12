@@ -13,7 +13,7 @@ import SelectDropdown from "./Selection/SelectDropdown";
 
 import { MovieFilterContext } from "../contexts/MovieFilterContext";
 
-import useIsScreenMd from "../hooks/useIsScreenMd";
+import useIsScreenSm from "../hooks/useIsScreenSm";
 import useScrollLock from "../hooks/useScrollLock";
 
 const filterPresetOptions = [
@@ -94,7 +94,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
     }
     const [state, dispatch] = context;
 
-    const isScreenMd = useIsScreenMd();
+    const isScreenSm = useIsScreenSm();
 
     const presetHandler = (presetValue: string) => {
         switch (presetValue) {
@@ -188,18 +188,18 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                     {filterDrawerOpen && (
                         <motion.div
                             initial={
-                                isScreenMd ? { x: "-100%" } : { y: "100%" }
+                                isScreenSm ? { x: "-100%" } : { y: "100%" }
                             }
-                            animate={isScreenMd ? { x: 0 } : { y: 0 }}
-                            exit={isScreenMd ? { x: "-100%" } : { y: "100%" }}
+                            animate={isScreenSm ? { x: 0 } : { y: 0 }}
+                            exit={isScreenSm ? { x: "-100%" } : { y: "100%" }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                             className={`fixed ${
-                                isScreenMd ? "top-0 left-0 bottom-0" : "inset-0"
+                                isScreenSm ? "top-0 left-0 bottom-0" : "inset-0"
                             } z-[2000] overflow-y-auto overscroll-contain pb-8 flex flex-col space-y-4 shadow-md bg-white`}
                         >
                             <div className="sticky top-0 flex justify-end">
                                 <AiOutlineClose
-                                    className="mr-4 md:mr-2 hover:cursor-pointer hover:text-palette-darkbrown"
+                                    className="mr-4 sm:mr-2 hover:cursor-pointer hover:text-palette-darkbrown"
                                     size={32}
                                     onClick={() => closeFilterDrawer()}
                                 />
