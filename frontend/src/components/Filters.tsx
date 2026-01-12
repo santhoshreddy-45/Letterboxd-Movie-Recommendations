@@ -1,14 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import { useContext, useState } from "react";
 import TuneIcon from "@mui/icons-material/Tune";
 import { AiOutlineClose } from "react-icons/ai";
 import { AnimatePresence, motion } from "framer-motion";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
 
+import AdvancedFilterHeaderText from "./Text/AdvancedFilterHeaderText";
 import DefinitionModal from "./Modals/DefinitionModal";
-import DefinitionText from "./Text/DefinitionText";
 import FilterToggleButton from "./Buttons/FilterToggleButton";
 import HorizontalDivider from "./Layout/HorizontalDivider";
 import MultiSelectDropdown from "./Selection/MultiSelectDropdown";
@@ -133,14 +130,9 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
         }
     };
 
-    const [smallFilterDrawerOpen, setSmallFilterDrawerOpen] = useState(false);
-    const [mediumFilterDrawerOpen, setMediumFilterDrawerOpen] = useState(false);
-    useEffect(() => {
-        if (isScreenMd) {
-            closeSmallFilterDrawer();
-        }
-    }, [isScreenMd]);
-    useScrollLock(smallFilterDrawerOpen);
+    const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+    useScrollLock(filterDrawerOpen);
 
     const resetFilters = () => {
         dispatch({
@@ -148,23 +140,8 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
         });
     };
 
-    const [filterDefinitionsOpen, setFilterDefinitionsOpen] = useState({
-        genres: false,
-        contentTypes: false,
-        popularity: false,
-        releaseYear: false,
-        runtime: false,
-    });
-
-    const closeSmallFilterDrawer = () => {
-        setFilterDefinitionsOpen({
-            genres: false,
-            contentTypes: false,
-            popularity: false,
-            releaseYear: false,
-            runtime: false,
-        });
-        setSmallFilterDrawerOpen(false);
+    const closeFilterDrawer = () => {
+        setFilterDrawerOpen(false);
     };
     return (
         <div className="w-fit mx-auto mt-8 flex flex-col">
@@ -199,294 +176,32 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                     />
                 </div>
 
-                {/* Filter Tags */}
-                <div className="w-fit lg:max-w-[500px] mx-auto flex flex-col md:flex-row flex-wrap items-center gap-2">
-                    <FilterToggleButton
-                        text="Highly Rated"
-                        isActive={state.highlyRated}
-                        onClick={() =>
-                            dispatch({
-                                type: "setHighlyRated",
-                                payload: {
-                                    highlyRated: !state.highlyRated,
-                                },
-                            })
-                        }
-                    />
-                    <FilterToggleButton
-                        text="Include Watchlist"
-                        isActive={state.includeWatchlist}
-                        onClick={() =>
-                            dispatch({
-                                type: "setIncludeWatchlist",
-                                payload: {
-                                    includeWatchlist: !state.includeWatchlist,
-                                },
-                            })
-                        }
-                    />
-                    {allowRewatches && (
-                        <FilterToggleButton
-                            text="Allow Rewatches"
-                            isActive={state.allowRewatches}
-                            onClick={() =>
-                                dispatch({
-                                    type: "setAllowRewatches",
-                                    payload: {
-                                        allowRewatches: !state.allowRewatches,
-                                    },
-                                })
-                            }
-                        />
-                    )}
-                </div>
-
-                <HorizontalDivider color="darkbrown" />
-
-                {/* Filters - Medium+ Screen */}
+                {/* Advanced Filters */}
                 <button
-                    className="hidden md:block mx-auto p-2 text-lg sm:text-xl rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
+                    className="block mx-auto p-2 text-lg sm:text-xl rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
                     type="button"
-                    onClick={() =>
-                        setMediumFilterDrawerOpen(!mediumFilterDrawerOpen)
-                    }
-                >
-                    Advanced Filters{" "}
-                    {mediumFilterDrawerOpen ? (
-                        <ArrowDropUpIcon />
-                    ) : (
-                        <ArrowDropDownIcon />
-                    )}
-                </button>
-                <AnimatePresence>
-                    {mediumFilterDrawerOpen && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{
-                                duration: 0.3,
-                                ease: "easeInOut",
-                            }}
-                            className="hidden md:flex md:flex-col space-y-4"
-                        >
-                            <div className="flex flex-row flex-wrap gap-2 justify-around">
-                                <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Genres
-                                        </h6>
-                                        <DefinitionModal
-                                            title={"Genres"}
-                                            definition={
-                                                filterDefinitions["Genres"]
-                                            }
-                                        />
-                                    </div>
-                                    <MultiSelectDropdown
-                                        options={genreOptions}
-                                        label="Select.."
-                                        values={state.genres}
-                                        setValues={(selectedOptions) =>
-                                            selectedOptions &&
-                                            dispatch({
-                                                type: "setGenres",
-                                                payload: {
-                                                    genres: selectedOptions,
-                                                },
-                                            })
-                                        }
-                                        disableSearch={true}
-                                    />
-                                </div>
-                                <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Content Types
-                                        </h6>
-                                        <DefinitionModal
-                                            title={"Content Types"}
-                                            definition={
-                                                filterDefinitions[
-                                                    "Content Types"
-                                                ]
-                                            }
-                                        />
-                                    </div>
-                                    <MultiSelectDropdown
-                                        options={contentTypeOptions}
-                                        label="Select.."
-                                        values={state.contentTypes}
-                                        setValues={(selectedOptions) =>
-                                            selectedOptions &&
-                                            dispatch({
-                                                type: "setContentTypes",
-                                                payload: {
-                                                    contentTypes:
-                                                        selectedOptions,
-                                                },
-                                            })
-                                        }
-                                        disableSearch={true}
-                                    />
-                                </div>
-                                <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Release Year
-                                        </h6>
-                                        <DefinitionModal
-                                            title={"Release Year"}
-                                            definition={
-                                                filterDefinitions[
-                                                    "Release Year"
-                                                ]
-                                            }
-                                        />
-                                    </div>
-                                    <div className="mt-2 flex justify-around">
-                                        <input
-                                            className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                            type="text"
-                                            value={state.minReleaseYear}
-                                            onChange={(event) =>
-                                                dispatch({
-                                                    type: "setMinReleaseYear",
-                                                    payload: {
-                                                        minReleaseYear:
-                                                            event.target.value,
-                                                    },
-                                                })
-                                            }
-                                        />
-                                        <p>to</p>
-                                        <input
-                                            className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                            type="text"
-                                            value={state.maxReleaseYear}
-                                            onChange={(event) =>
-                                                dispatch({
-                                                    type: "setMaxReleaseYear",
-                                                    payload: {
-                                                        maxReleaseYear:
-                                                            event.target.value,
-                                                    },
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Runtime
-                                        </h6>
-                                        <DefinitionModal
-                                            title={"Runtime"}
-                                            definition={
-                                                filterDefinitions["Runtime"]
-                                            }
-                                        />
-                                    </div>
-                                    <div className="mt-2 flex justify-around">
-                                        <input
-                                            className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                            type="text"
-                                            value={state.minRuntime}
-                                            onChange={(event) =>
-                                                dispatch({
-                                                    type: "setMinRuntime",
-                                                    payload: {
-                                                        minRuntime:
-                                                            event.target.value,
-                                                    },
-                                                })
-                                            }
-                                        />
-                                        <p>to</p>
-                                        <input
-                                            className="w-20 text-center border-2 border-gray-300 rounded-md"
-                                            type="text"
-                                            value={state.maxRuntime}
-                                            onChange={(event) =>
-                                                dispatch({
-                                                    type: "setMaxRuntime",
-                                                    payload: {
-                                                        maxRuntime:
-                                                            event.target.value,
-                                                    },
-                                                })
-                                            }
-                                        />
-                                    </div>
-                                </div>
-                                <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Popularity
-                                        </h6>
-                                        <DefinitionModal
-                                            title={"Popularity"}
-                                            definition={
-                                                filterDefinitions["Popularity"]
-                                            }
-                                        />
-                                    </div>
-                                    <div className="mt-2">
-                                        <MultiSelectDropdown
-                                            options={popularityOptions}
-                                            label="Select.."
-                                            values={state.popularity}
-                                            setValues={(selectedOptions) =>
-                                                selectedOptions &&
-                                                dispatch({
-                                                    type: "setPopularity",
-                                                    payload: {
-                                                        popularity:
-                                                            selectedOptions,
-                                                    },
-                                                })
-                                            }
-                                            disableSearch={true}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <button
-                                className="block mx-auto p-2 rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                                type="reset"
-                                onClick={resetFilters}
-                            >
-                                Reset Filters
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Filters - Small- Screen */}
-                <button
-                    className="block md:hidden mx-auto p-2 text-lg sm:text-xl rounded-md hover:shadow-md bg-gray-200 hover:bg-palette-lightbrown"
-                    type="button"
-                    onClick={() =>
-                        setSmallFilterDrawerOpen(!smallFilterDrawerOpen)
-                    }
+                    onClick={() => setFilterDrawerOpen(!filterDrawerOpen)}
                 >
                     Advanced Filters <TuneIcon />
                 </button>
                 <AnimatePresence>
-                    {smallFilterDrawerOpen && (
+                    {filterDrawerOpen && (
                         <motion.div
-                            initial={{ y: "100%" }}
-                            animate={{ y: 0 }}
-                            exit={{ y: "100%" }}
+                            initial={
+                                isScreenMd ? { x: "-100%" } : { y: "100%" }
+                            }
+                            animate={isScreenMd ? { x: 0 } : { y: 0 }}
+                            exit={isScreenMd ? { x: "-100%" } : { y: "100%" }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="md:hidden fixed inset-0 z-[2000] overflow-y-auto overscroll-contain pb-8 flex flex-col space-y-4 shadow-md bg-white"
+                            className={`fixed ${
+                                isScreenMd ? "top-0 left-0 bottom-0" : "inset-0"
+                            } z-[2000] overflow-y-auto overscroll-contain pb-8 flex flex-col space-y-4 shadow-md bg-white`}
                         >
                             <div className="sticky top-0 flex justify-end">
                                 <AiOutlineClose
-                                    className="mr-4 hover:cursor-pointer hover:text-palette-darkbrown"
+                                    className="mr-4 md:mr-2 hover:cursor-pointer hover:text-palette-darkbrown"
                                     size={32}
-                                    onClick={() => closeSmallFilterDrawer()}
+                                    onClick={() => closeFilterDrawer()}
                                 />
                             </div>
                             <button
@@ -496,37 +211,13 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                             >
                                 Reset Filters
                             </button>
-                            <div className="flex flex-col items-center space-y-4">
+                            <div className="px-12 flex flex-col items-center space-y-4">
+                                {/* Genres Filter */}
                                 <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Genres
-                                        </h6>
-                                        <IconButton
-                                            onClick={() =>
-                                                setFilterDefinitionsOpen(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        genres: !prev.genres,
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            <InfoOutlinedIcon
-                                                color={
-                                                    filterDefinitionsOpen.genres
-                                                        ? "action"
-                                                        : "primary"
-                                                }
-                                                fontSize="small"
-                                            />
-                                        </IconButton>
-                                    </div>
-                                    {filterDefinitionsOpen.genres && (
-                                        <DefinitionText
-                                            text={filterDefinitions["Genres"]}
-                                        />
-                                    )}
+                                    <AdvancedFilterHeaderText
+                                        title="Genres"
+                                        definition={filterDefinitions["Genres"]}
+                                    />
                                     <MultiSelectDropdown
                                         options={genreOptions}
                                         label="Select.."
@@ -543,41 +234,15 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                         disableSearch={true}
                                     />
                                 </div>
+
+                                {/* Content Types Filter */}
                                 <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Content Types
-                                        </h6>
-                                        <IconButton
-                                            onClick={() =>
-                                                setFilterDefinitionsOpen(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        contentTypes:
-                                                            !prev.contentTypes,
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            <InfoOutlinedIcon
-                                                color={
-                                                    filterDefinitionsOpen.contentTypes
-                                                        ? "action"
-                                                        : "primary"
-                                                }
-                                                fontSize="small"
-                                            />
-                                        </IconButton>
-                                    </div>
-                                    {filterDefinitionsOpen.contentTypes && (
-                                        <DefinitionText
-                                            text={
-                                                filterDefinitions[
-                                                    "Content Types"
-                                                ]
-                                            }
-                                        />
-                                    )}
+                                    <AdvancedFilterHeaderText
+                                        title="Content Types"
+                                        definition={
+                                            filterDefinitions["Content Types"]
+                                        }
+                                    />
                                     <MultiSelectDropdown
                                         options={contentTypeOptions}
                                         label="Select.."
@@ -595,39 +260,15 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                         disableSearch={true}
                                     />
                                 </div>
+
+                                {/* Popularity Filter */}
                                 <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Popularity
-                                        </h6>
-                                        <IconButton
-                                            onClick={() =>
-                                                setFilterDefinitionsOpen(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        popularity:
-                                                            !prev.popularity,
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            <InfoOutlinedIcon
-                                                color={
-                                                    filterDefinitionsOpen.popularity
-                                                        ? "action"
-                                                        : "primary"
-                                                }
-                                                fontSize="small"
-                                            />
-                                        </IconButton>
-                                    </div>
-                                    {filterDefinitionsOpen.popularity && (
-                                        <DefinitionText
-                                            text={
-                                                filterDefinitions["Popularity"]
-                                            }
-                                        />
-                                    )}
+                                    <AdvancedFilterHeaderText
+                                        title="Popularity"
+                                        definition={
+                                            filterDefinitions["Popularity"]
+                                        }
+                                    />
                                     <div className="mt-2">
                                         <MultiSelectDropdown
                                             options={popularityOptions}
@@ -647,41 +288,15 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                         />
                                     </div>
                                 </div>
+
+                                {/* Release Year Filter */}
                                 <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Release Year
-                                        </h6>
-                                        <IconButton
-                                            onClick={() =>
-                                                setFilterDefinitionsOpen(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        releaseYear:
-                                                            !prev.releaseYear,
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            <InfoOutlinedIcon
-                                                color={
-                                                    filterDefinitionsOpen.releaseYear
-                                                        ? "action"
-                                                        : "primary"
-                                                }
-                                                fontSize="small"
-                                            />
-                                        </IconButton>
-                                    </div>
-                                    {filterDefinitionsOpen.releaseYear && (
-                                        <DefinitionText
-                                            text={
-                                                filterDefinitions[
-                                                    "Release Year"
-                                                ]
-                                            }
-                                        />
-                                    )}
+                                    <AdvancedFilterHeaderText
+                                        title="Release Year"
+                                        definition={
+                                            filterDefinitions["Release Year"]
+                                        }
+                                    />
                                     <div className="mt-2 flex justify-around">
                                         <input
                                             className="w-20 text-center border-2 border-gray-300 rounded-md"
@@ -714,36 +329,15 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                                         />
                                     </div>
                                 </div>
+
+                                {/* Runtime Filter */}
                                 <div className="w-48">
-                                    <div className="flex justify-center">
-                                        <h6 className="w-fit my-auto text-lg sm:text-xl">
-                                            Runtime
-                                        </h6>
-                                        <IconButton
-                                            onClick={() =>
-                                                setFilterDefinitionsOpen(
-                                                    (prev) => ({
-                                                        ...prev,
-                                                        runtime: !prev.runtime,
-                                                    })
-                                                )
-                                            }
-                                        >
-                                            <InfoOutlinedIcon
-                                                color={
-                                                    filterDefinitionsOpen.runtime
-                                                        ? "action"
-                                                        : "primary"
-                                                }
-                                                fontSize="small"
-                                            />
-                                        </IconButton>
-                                    </div>
-                                    {filterDefinitionsOpen.runtime && (
-                                        <DefinitionText
-                                            text={filterDefinitions["Runtime"]}
-                                        />
-                                    )}
+                                    <AdvancedFilterHeaderText
+                                        title="Runtime"
+                                        definition={
+                                            filterDefinitions["Runtime"]
+                                        }
+                                    />
                                     <div className="mt-2 flex justify-around">
                                         <input
                                             className="w-20 text-center border-2 border-gray-300 rounded-md"
@@ -780,6 +374,60 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <HorizontalDivider color="darkbrown" />
+
+                {/* Filter Tags */}
+                <div className="w-fit lg:max-w-[500px] mx-auto">
+                    <Stack
+                        spacing={{ xs: 1, sm: 2 }}
+                        direction="row"
+                        useFlexGap
+                        sx={{ flexWrap: "wrap" }}
+                    >
+                        <FilterToggleButton
+                            text="Highly Rated"
+                            isActive={state.highlyRated}
+                            onClick={() =>
+                                dispatch({
+                                    type: "setHighlyRated",
+                                    payload: {
+                                        highlyRated: !state.highlyRated,
+                                    },
+                                })
+                            }
+                        />
+                        <FilterToggleButton
+                            text="Include Watchlist"
+                            isActive={state.includeWatchlist}
+                            onClick={() =>
+                                dispatch({
+                                    type: "setIncludeWatchlist",
+                                    payload: {
+                                        includeWatchlist:
+                                            !state.includeWatchlist,
+                                    },
+                                })
+                            }
+                        />
+
+                        {allowRewatches && (
+                            <FilterToggleButton
+                                text="Allow Rewatches"
+                                isActive={state.allowRewatches}
+                                onClick={() =>
+                                    dispatch({
+                                        type: "setAllowRewatches",
+                                        payload: {
+                                            allowRewatches:
+                                                !state.allowRewatches,
+                                        },
+                                    })
+                                }
+                            />
+                        )}
+                    </Stack>
+                </div>
             </div>
         </div>
     );
