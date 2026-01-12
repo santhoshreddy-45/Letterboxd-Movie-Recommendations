@@ -478,7 +478,7 @@ const Filters = ({ allowRewatches }: FiltersProps) => {
                         <motion.div
                             initial={{ y: "100%" }}
                             animate={{ y: 0 }}
-                            exit={{ y: "-100%" }}
+                            exit={{ y: "100%" }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                             className="md:hidden fixed inset-0 z-[2000] overflow-y-auto overscroll-contain pb-8 flex flex-col space-y-4 shadow-md bg-white"
                         >
