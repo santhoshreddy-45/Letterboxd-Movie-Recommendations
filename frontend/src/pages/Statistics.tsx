@@ -4,7 +4,7 @@ import { useForm, FieldErrors } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { Helmet } from "react-helmet-async";
 
-import CycleText from "../components/CycleText";
+import CycleText from "../components/Text/CycleText";
 import DefinitionsModal from "../components/Modals/DefinitionsModal";
 import DistributionChart from "../components/Charts/DistributionChart";
 import ErasDisplay from "../components/Displays/ErasDisplay";
