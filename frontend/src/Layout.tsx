@@ -13,7 +13,7 @@ function Layout() {
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
                     severity="error"
-                    message="Currently experiencing technical error while fetching user ratings - sorry for the inconvenience!"
+                    message="9:57am est: experiencing technical error while fetching user ratings"
                 />
                 <div className="grow">
                     <Outlet />
