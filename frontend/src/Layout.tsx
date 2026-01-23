@@ -13,7 +13,19 @@ function Layout() {
             <div className="flex flex-col min-h-screen">
                 <CustomAlert
                     severity="error"
-                    message="9:57am est: experiencing technical error while fetching user ratings"
+                    message={
+                        <p className="w-fit">
+                            This website has been shut down indefinitely. Click
+                            here for a detailed{" "}
+                            <a
+                                className="underline shadow-sm hover:decoration-palette-darkbrown hover:opacity-75"
+                                href="/update"
+                            >
+                                update
+                            </a>
+                            .
+                        </p>
+                    }
                 />
                 <div className="grow">
                     <Outlet />

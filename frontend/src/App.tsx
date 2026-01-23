@@ -10,6 +10,7 @@ import Metrics from "./pages/Metrics";
 import ReleaseNotes from "./pages/ReleaseNotes";
 import Compatibility from "./pages/Compatibility";
 import Statistics from "./pages/Statistics";
+import Update from "./pages/Update";
 import Watchlist from "./pages/Watchlist";
 
 import CardViewProvider from "./contexts/CardViewContext";
@@ -57,6 +58,7 @@ function App() {
                                 path="/release-notes"
                                 element={<ReleaseNotes />}
                             />
+                            <Route path="/update" element={<Update />} />
                             <Route path="*" element={<Error />} />
                         </Route>
                     </Routes>
