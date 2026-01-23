@@ -6,34 +6,45 @@ with friends, all using just your Letterboxd username.
 
 [recommendations.victorverma.com](https://recommendations.victorverma.com/)
 
+## Update - January 22, 2026
+
+Unfortunately, this website has been shut down indefinitely. In December 2025,
+Letterboxd updated their terms of service and prohibited any automated data
+collection from their website (section 6.11). Previously, they had no specific
+policy, so I was able to leverage the gray area to gather movie data and user
+ratings with plausible deniability. Under this new provision, however,
+Letterboxd would be empowered to take legal action against my site if it
+remained operational. As a film fan, I love Letterboxd, and I totally understand
+and respect their decision to protect their content.
+
 ## Table of Contents
 
--   [Sitemap](#sitemap)
--   [Technologies](#technologies)
--   [Core Features](#core-features)
-    -   [Recommendations](#recommendations)
-        -   [Architecture](#architecture)
-        -   [Movie Data Collection](#movie-data-collection)
-        -   [User Rating Collection](#user-rating-collection)
-        -   [Personalized Recommendation Model](#personalized-recommendation-model)
-        -   [Recommendation Filters](#recommendation-filters)
-        -   [Multi-User Recommendations](#multi-user-recommendations)
-        -   [Predictions](#predictions)
-    -   [Statistics](#statistics)
-        -   [Basic Statistics](#basic-statistics)
-        -   [Genre Statistics](#genre-statistics)
-        -   [Era Averages](#era-averages)
-        -   [User Rating Distribution](#user-rating-distribution)
-    -   [Watchlist Picker](#watchlist-picker)
-        -   [Multi-User Watchlist Picks](#multi-user-watchlist-picks)
-    -   [Profile Compatibility](#profile-compatibility)
-        -   [Film Compatibility Score](#film-compatibility-score)
-        -   [Genre Compatibility Score](#genre-compatibility-score)
-        -   [Era Compatibility Score](#era-compatibility-score)
-        -   [Shared Favorites](#shared-favorites)
-        -   [Polarizing Watches](#polarizing-watches)
--   [Inspiration](#inspiration)
--   [Limitations](#limitations)
+- [Sitemap](#sitemap)
+- [Technologies](#technologies)
+- [Core Features](#core-features)
+    - [Recommendations](#recommendations)
+        - [Architecture](#architecture)
+        - [Movie Data Collection](#movie-data-collection)
+        - [User Rating Collection](#user-rating-collection)
+        - [Personalized Recommendation Model](#personalized-recommendation-model)
+        - [Recommendation Filters](#recommendation-filters)
+        - [Multi-User Recommendations](#multi-user-recommendations)
+        - [Predictions](#predictions)
+    - [Statistics](#statistics)
+        - [Basic Statistics](#basic-statistics)
+        - [Genre Statistics](#genre-statistics)
+        - [Era Averages](#era-averages)
+        - [User Rating Distribution](#user-rating-distribution)
+    - [Watchlist Picker](#watchlist-picker)
+        - [Multi-User Watchlist Picks](#multi-user-watchlist-picks)
+    - [Profile Compatibility](#profile-compatibility)
+        - [Film Compatibility Score](#film-compatibility-score)
+        - [Genre Compatibility Score](#genre-compatibility-score)
+        - [Era Compatibility Score](#era-compatibility-score)
+        - [Shared Favorites](#shared-favorites)
+        - [Polarizing Watches](#polarizing-watches)
+- [Inspiration](#inspiration)
+- [Limitations](#limitations)
 
 ## Sitemap
 
@@ -50,14 +61,14 @@ root
 
 ## Technologies
 
--   Frontend:
-    -   `React`, `TypeScript`, `Tailwind CSS`.
--   Backend:
-    -   `Flask`, `Python`, `Supabase` (postgreSQL), `Redis`, `MongoDB`.
--   Infrastructure:
-    -   `Vercel` (frontend), `Amazon Lightsail` (backend).
--   Tools:
-    -   `GitHub Actions`.
+- Frontend:
+    - `React`, `TypeScript`, `Tailwind CSS`.
+- Backend:
+    - `Flask`, `Python`, `Supabase` (postgreSQL), `Redis`, `MongoDB`.
+- Infrastructure:
+    - `Vercel` (frontend), `Amazon Lightsail` (backend).
+- Tools:
+    - `GitHub Actions`.
 
 ## Core Features
 
@@ -84,17 +95,17 @@ once per month through a scheduled GitHub Action.
 
 The following features are stored as a table in the database:
 
--   `movie_id`,
--   `url`,
--   `title`,
--   `release_year`,
--   `runtime`,
--   `genres`,
--   `country_of_origin`,
--   `content_type`,
--   `letterboxd_rating`,
--   `letterboxd_rating_count`,
--   `poster`.
+- `movie_id`,
+- `url`,
+- `title`,
+- `release_year`,
+- `runtime`,
+- `genres`,
+- `country_of_origin`,
+- `content_type`,
+- `letterboxd_rating`,
+- `letterboxd_rating_count`,
+- `poster`.
 
 The movie data is stored in LRU cache on the `Flask` server to improve
 end-to-end latency.
@@ -104,11 +115,11 @@ end-to-end latency.
 When the user inputs their username, their Letterboxd ratings are scraped from
 their profile. The following features are aggregated:
 
--   `movie_id`,
--   `user_rating`,
--   `liked`,
--   `url`,
--   `username`.
+- `movie_id`,
+- `user_rating`,
+- `liked`,
+- `url`,
+- `username`.
 
 Currently, the `liked` feature is not in use. While processing a request, the
 scraped user ratings are merged with the movie data on the key `(movie_id, url)`
@@ -130,32 +141,32 @@ create the data used to train the machine learning model.
 
 The training features are
 
--   `release_year (int)`,
--   `runtime (int)`,
--   `genres (int)`,
--   `country_of_origin (int)`,
--   `letterboxd_rating (float)`,
--   `letterboxd_rating_count (int)`,
--   `is_action (int)`,
--   `is_adventure (int)`,
--   `is_animation (int)`,
--   `is_comedy (int)`,
--   `is_crime (int)`,
--   `is_documentary (int)`,
--   `is_drama (int)`,
--   `is_family (int)`,
--   `is_fantasy (int)`,
--   `is_history (int)`,
--   `is_horror (int)`,
--   `is_music (int)`,
--   `is_mystery (int)`,
--   `is_romance (int)`,
--   `is_science_fiction (int)`,
--   `is_tv_movie (int)`,
--   `is_thriller (int)`,
--   `is_war (int)`,
--   `is_western (int)`,
--   `is_movie (int)`.
+- `release_year (int)`,
+- `runtime (int)`,
+- `genres (int)`,
+- `country_of_origin (int)`,
+- `letterboxd_rating (float)`,
+- `letterboxd_rating_count (int)`,
+- `is_action (int)`,
+- `is_adventure (int)`,
+- `is_animation (int)`,
+- `is_comedy (int)`,
+- `is_crime (int)`,
+- `is_documentary (int)`,
+- `is_drama (int)`,
+- `is_family (int)`,
+- `is_fantasy (int)`,
+- `is_history (int)`,
+- `is_horror (int)`,
+- `is_music (int)`,
+- `is_mystery (int)`,
+- `is_romance (int)`,
+- `is_science_fiction (int)`,
+- `is_tv_movie (int)`,
+- `is_thriller (int)`,
+- `is_war (int)`,
+- `is_western (int)`,
+- `is_movie (int)`.
 
 The target feature is `user_rating (float)`.
 
@@ -200,13 +211,13 @@ based on their Letterboxd profile.
 
 There are four basic statistics:
 
--   `User Rating`: the rating the user gives to a movie on Letterboxd,
--   `Letterboxd Rating`: the Letterboxd community rating of a movie the user has
-    rated,
--   `Rating Differential`: the difference between the user's rating and the
-    Letterboxd community rating of a movie,
--   `Letterboxd Rating Count`: the number of Letterboxd community ratings for a
-    movie the user has rated.
+- `User Rating`: the rating the user gives to a movie on Letterboxd,
+- `Letterboxd Rating`: the Letterboxd community rating of a movie the user has
+  rated,
+- `Rating Differential`: the difference between the user's rating and the
+  Letterboxd community rating of a movie,
+- `Letterboxd Rating Count`: the number of Letterboxd community ratings for a
+  movie the user has rated.
 
 The user can see the average and standard deviation of each basic statistic
 based on their profile, as well as the percentiles of their statistics relative
@@ -323,12 +334,11 @@ in 2023, and v1.0.0 of the website came online in April 2024.
 
 The limitations of this project are mostly due to financial constraints.
 
--   I am using the `Supabase` free tier, which only allows for 500 MB of storage
-    and 5 GB of egress per month. Therefore, I have to be extremely efficient
-    with what data I choose to store, as well as how often I choose to retrieve
-    it. Besides improving latency, `Redis` also helped in reducing my database
-    egress.
--   I am paying $7 per month to deploy my backend server on `Amazon Lightsail`,
-    which has one instance with a limit of 1 GB RAM and 2 vCPUs. Large volumes
-    of concurrent server traffic occasionally cause my server to exceed the
-    memory limit and crash.
+- I am using the `Supabase` free tier, which only allows for 500 MB of storage
+  and 5 GB of egress per month. Therefore, I have to be extremely efficient with
+  what data I choose to store, as well as how often I choose to retrieve it.
+  Besides improving latency, `Redis` also helped in reducing my database egress.
+- I am paying $7 per month to deploy my backend server on `Amazon Lightsail`,
+  which has one instance with a limit of 1 GB RAM and 2 vCPUs. Large volumes of
+  concurrent server traffic occasionally cause my server to exceed the memory
+  limit and crash.
