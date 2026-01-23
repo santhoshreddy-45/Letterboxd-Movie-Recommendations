@@ -92,7 +92,7 @@ const Statistics = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [currentUser, setCurrentUser] = useState("");
     const [statistics, setStatistics] = useState<null | StatisticsResponse>(
-        null
+        null,
     );
     const [gettingStatistics, setGettingStatistics] = useState(false);
     const [generatedDatetime, setGeneratedDatetime] = useState<string>("");
@@ -110,7 +110,7 @@ const Statistics = () => {
         try {
             const statisticsResponse = await axios.post(
                 `${backend}/api/get-statistics`,
-                { username: username }
+                { username: username },
             );
             // console.log(statisticsResponse.data.data);
             setStatistics(statisticsResponse.data.data);
@@ -199,6 +199,7 @@ const Statistics = () => {
                         </label>
                         <div className="form-control flex flex-col">
                             <input
+                                disabled={true}
                                 className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                                 type="text"
                                 id="username"

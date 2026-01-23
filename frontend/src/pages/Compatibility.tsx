@@ -23,7 +23,7 @@ const backend = import.meta.env.VITE_BACKEND_URL;
 
 const isQueryEqual = (
     previousQuery: CompatibilityQuery,
-    currentQuery: CompatibilityQuery
+    currentQuery: CompatibilityQuery,
 ): boolean => {
     if (
         previousQuery.username_1 === currentQuery.username_2 &&
@@ -70,7 +70,7 @@ const Compatibility = () => {
             // console.log(currentQuery);
             const response = await axios.post(
                 `${backend}/api/get-compatibility`,
-                { currentQuery }
+                { currentQuery },
             );
             // console.log(response.data.data);
             setCompatibility(response.data.data);
@@ -127,7 +127,7 @@ const Compatibility = () => {
 
         getCompatibility(
             usernameValidation1.username,
-            usernameValidation2.username
+            usernameValidation2.username,
         );
     };
 
@@ -166,6 +166,7 @@ const Compatibility = () => {
                         </label>
                         <div className="form-control flex flex-col align-center">
                             <input
+                                disabled={true}
                                 className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                                 type="text"
                                 placeholder={"First username"}
@@ -174,6 +175,7 @@ const Compatibility = () => {
                         </div>
                         <div className="form-control flex flex-col align-center">
                             <input
+                                disabled={true}
                                 className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                                 type="text"
                                 placeholder={"Second username"}

@@ -36,7 +36,7 @@ const backend = import.meta.env.VITE_BACKEND_URL;
 
 const isQueryEqual = (
     previousQuery: RecommendationQuery,
-    currentQuery: RecommendationQuery
+    currentQuery: RecommendationQuery,
 ): boolean => {
     if (previousQuery.usernames.length !== currentQuery.usernames.length) {
         return false;
@@ -102,7 +102,7 @@ const isQueryEqual = (
 
 const isFilterQueryEqual = (
     previousFilterQuery: RecommendationFilterQuery,
-    currentFilterQuery: RecommendationFilterQuery
+    currentFilterQuery: RecommendationFilterQuery,
 ): boolean => {
     if (previousFilterQuery.username !== currentFilterQuery.username) {
         return false;
@@ -116,7 +116,7 @@ const isFilterQueryEqual = (
 
 const isPredictionQueryEqual = (
     previousPredictionQuery: RecommendationPredictionQuery,
-    currentPredictionQuery: RecommendationPredictionQuery
+    currentPredictionQuery: RecommendationPredictionQuery,
 ): boolean => {
     if (previousPredictionQuery.username !== currentPredictionQuery.username) {
         return false;
@@ -144,7 +144,7 @@ const Recommendation = () => {
     const movieFilterContext = useContext(MovieFilterContext);
     if (!movieFilterContext) {
         throw new Error(
-            "Movie filters must be used within a MovieFilterProvider"
+            "Movie filters must be used within a MovieFilterProvider",
         );
     }
     const [movieFilterState] = movieFilterContext;
@@ -152,7 +152,7 @@ const Recommendation = () => {
     const cardViewContext = useContext(CardViewContext);
     if (!cardViewContext) {
         throw new Error(
-            "Recommendations must be used within a CardViewProvider"
+            "Recommendations must be used within a CardViewProvider",
         );
     }
     const [cardViewState, cardViewDispatch] = cardViewContext;
@@ -233,7 +233,7 @@ const Recommendation = () => {
         ) {
             enqueueSnackbar(
                 `Min and max release year must be between 1880 and ${new Date().getFullYear()} (inclusive)`,
-                { variant: "error" }
+                { variant: "error" },
             );
             return;
         } else if (
@@ -241,7 +241,7 @@ const Recommendation = () => {
         ) {
             enqueueSnackbar(
                 "Min release year cannot be after the max release year",
-                { variant: "error" }
+                { variant: "error" },
             );
             return;
         }
@@ -263,7 +263,7 @@ const Recommendation = () => {
         ) {
             enqueueSnackbar(
                 `Min runtime must be between 0 and 2000 (inclusive)`,
-                { variant: "error" }
+                { variant: "error" },
             );
             return;
         } else if (
@@ -272,7 +272,7 @@ const Recommendation = () => {
         ) {
             enqueueSnackbar(
                 `Max runtime must be between 5 and 2000 (inclusive)`,
-                { variant: "error" }
+                { variant: "error" },
             );
             return;
         } else if (
@@ -283,7 +283,7 @@ const Recommendation = () => {
                 "Min runtime cannot be greater than the max runtime",
                 {
                     variant: "error",
-                }
+                },
             );
             return;
         }
@@ -327,7 +327,7 @@ const Recommendation = () => {
             // console.log(currentQuery);
             const response = await axios.post(
                 `${backend}/api/get-recommendations`,
-                { currentQuery }
+                { currentQuery },
             );
             // console.log(response.data.data);
             setRecommendations(response.data.data);
@@ -375,7 +375,7 @@ const Recommendation = () => {
             // console.log(currentFilterQuery);
             const response = await axios.post(
                 `${backend}/api/get-natural-language-recommendations`,
-                { currentFilterQuery }
+                { currentFilterQuery },
             );
             // console.log(response.data.data);
             setFilterRecommendations(response.data.data);
@@ -421,7 +421,7 @@ const Recommendation = () => {
         if (
             isPredictionQueryEqual(
                 previousPredictionQuery,
-                currentPredictionQuery
+                currentPredictionQuery,
             )
         ) {
             enqueueSnackbar("Identical user query", {
@@ -436,7 +436,7 @@ const Recommendation = () => {
             // console.log(currentPredictionQuery);
             const response = await axios.post(
                 `${backend}/api/get-prediction-recommendations`,
-                { currentPredictionQuery }
+                { currentPredictionQuery },
             );
             // console.log(response.data.data);
             setPredictionRecommendations(response.data.data);
@@ -469,7 +469,7 @@ const Recommendation = () => {
     const onSubmit = (formData: RecommendationFormValues) => {
         if (filterType === "manual") {
             const usernameValidation = validateMultipleUsernames(
-                formData.userList
+                formData.userList,
             );
             if (usernameValidation.status === "error") {
                 enqueueSnackbar(usernameValidation.message, {
@@ -481,7 +481,7 @@ const Recommendation = () => {
             getRecommendations(usernameValidation.usernames);
         } else if (filterType === "description") {
             const usernameValidation = validateSingleUsername(
-                formData.userList
+                formData.userList,
             );
             if (usernameValidation.status === "error") {
                 enqueueSnackbar(usernameValidation.message, {
@@ -493,7 +493,7 @@ const Recommendation = () => {
             getFilterRecommendations(usernameValidation.username);
         } else if (filterType === "prediction") {
             const usernameValidation = validateSingleUsername(
-                formData.userList
+                formData.userList,
             );
             if (usernameValidation.status === "error") {
                 enqueueSnackbar(usernameValidation.message, {
@@ -526,7 +526,7 @@ const Recommendation = () => {
                         >
                             {item.charAt(0).toUpperCase() + item.slice(1)}
                         </button>
-                    )
+                    ),
                 )}
             </div>
 
@@ -554,6 +554,7 @@ const Recommendation = () => {
                     </label>
                     <div className="form-control flex flex-col align-center">
                         <input
+                            disabled={true}
                             className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                             type="text"
                             placeholder={

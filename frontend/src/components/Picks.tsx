@@ -31,7 +31,7 @@ const backend = import.meta.env.VITE_BACKEND_URL;
 
 const isQueryEqual = (
     previousQuery: PickQuery,
-    currentQuery: PickQuery
+    currentQuery: PickQuery,
 ): boolean => {
     if (currentQuery.pickType === "random") {
         return false;
@@ -66,7 +66,7 @@ const Picks = () => {
     const cardViewContext = useContext(CardViewContext);
     if (!cardViewContext) {
         throw new Error(
-            "Recommendations must be used within a CardViewProvider"
+            "Recommendations must be used within a CardViewProvider",
         );
     }
     const [cardViewState, cardViewDispatch] = cardViewContext;
@@ -119,7 +119,7 @@ const Picks = () => {
             // console.log(currentQuery);
             const response = await axios.post(
                 `${backend}/api/get-watchlist-picks`,
-                { currentQuery }
+                { currentQuery },
             );
             // console.log(response.data.data);
             setPickState((prev) => ({
@@ -211,6 +211,7 @@ const Picks = () => {
                     </label>
                     <div className="form-control flex flex-col align-center">
                         <input
+                            disabled={true}
                             className="w-64 sm:w-96 mx-auto p-1 text-center rounded-md bg-gray-200"
                             type="text"
                             placeholder="Separate by comma"
