@@ -43,8 +43,8 @@ const Update = () => {
                     For those who don't know, this website was a passion project
                     that I initially started in my sophomore year of college to
                     help my roommate and I decide which movie to watch next.
-                    Nearly 3 years later, it's staggering to see this website
-                    was used <strong>57,901</strong> times by{" "}
+                    Nearly 3 years later, it's staggering to see that this
+                    website was used <strong>57,901</strong> times by{" "}
                     <strong>13,447</strong> unique users across{" "}
                     <strong>139</strong> countries. Whether you're one of the 47
                     people who've used my site over 100 times, or someone who
@@ -66,7 +66,7 @@ const Update = () => {
                     Again, I'd like to thank everyone who helped make my passion
                     project into a reality. If anyone has any questions, is
                     interested in learning more about my experience building
-                    this website, or even just wants to talk to me, feel free to
+                    this website, or even just wants to talk, feel free to
                     connect with me on{" "}
                     <a
                         className="underline shadow-sm hover:decoration-palette-darkbrown hover:opacity-75"
