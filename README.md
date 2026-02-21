@@ -19,6 +19,7 @@ and respect their decision to protect their content.
 
 ## Table of Contents
 Added new content
+this build number
 - [Sitemap](#sitemap)
 - [Technologies](#technologies)
 - [Core Features](#core-features)
